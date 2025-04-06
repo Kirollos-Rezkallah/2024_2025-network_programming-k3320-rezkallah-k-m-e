@@ -5,7 +5,7 @@ Year: 2024/2025
 Group: K3320
 Author: Kirollos Rezkallah  
 Lab: Lab1  
-Date of create: 25.03.2025
+Date of create: 25.03.2025  
 Date of finished: 06.04.2025
 
 ## Lab #1 "Installing CHR and Ansible, setting up a VPN"
