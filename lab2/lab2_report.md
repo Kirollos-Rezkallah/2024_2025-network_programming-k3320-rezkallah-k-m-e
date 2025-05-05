@@ -5,8 +5,8 @@ Year: 2024/2025
 Group: K3320  
 Author: Kirollos Rezkallah  
 Lab: Lab2  
-Date of create:  
-Date of finished:
+Date of create: 03.05.2025  
+Date of finished: 05.05.2025
 
 ## Lab №2 "Deploying Additional CHR, the first Ansible scenario"
 
