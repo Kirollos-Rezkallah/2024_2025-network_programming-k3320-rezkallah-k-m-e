@@ -1,0 +1,65 @@
+- name: Setup MikroTik CHR
+  hosts: mikrotik
+  gather_facts: no
+  tasks:
+    # Настройка логина и пароля
+    - name: Set admin login credentials
+      community.routeros.command:
+        commands:
+          - /user set admin password="QWERTY"
+      register: user_verify
+      ignore_errors: no
+
+    - name: Verify Сhanges
+      ansible.builtin.debug:
+        msg: "Ну есть жеееее, работает"
+
+    - name: Show user change result
+      ansible.builtin.debug:
+        msg: |
+          "Порядки меняются, пароль запривачен {{ inventory_hostname }}:{{ user_verify }}"
+
+    # Настройка NTP-клиента
+    - name: Configure NTP Client
+      community.routeros.command:
+        commands:
+          - /system ntp client set enabled=yes mode=unicast
+          - /system ntp client servers add address=216.239.35.4
+          - /system ntp client servers add address=216.239.35.8  # google NTP servers
+          - /system ntp client print
+      register: ntp_result
+      ignore_errors: no
+
+    - name: Configure OSPF with specific Router ID for each CHR
+      community.routeros.command:
+        commands:
+          - /ip address add address={{ router_id }} interface=lo
+          - /routing ospf instance add disabled=no name=skynet router-id={{ router_id }} redistribute=connected,static
+          - /routing ospf area add disabled=no instance=skynet name=backbone
+          - /routing ospf interface-template add area=backbone cost=100 disabled=no type=ptp interfaces={{ router_int }}
+      vars:
+        router_id: "{{ '1.1.1.1' if ansible_host == '10.0.0.2' else '3.3.3.3' }}"
+        router_int: "{{ 'wg2' if ansible_host == '10.0.0.2' else 'wg0' }}"
+
+    - name: OSPF topology data
+      community.routeros.command:
+        commands:
+          - /routing/ospf/neighbor/print
+          - /routing/ospf/interface/print
+          - /routing/ospf/area/print
+          - /routing/ospf/instance/print
+      register: ospf_data
+
+    - name: Get full device configuration
+      community.routeros.command:
+        commands:
+          - /export
+      register: full_config
+      
+    - name: Print OSPF data
+      ansible.builtin.debug:
+        var: ospf_data
+
+    - name: Print full device configuration
+      ansible.builtin.debug:
+        var: full_config
