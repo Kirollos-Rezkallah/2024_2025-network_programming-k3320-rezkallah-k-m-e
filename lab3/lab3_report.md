@@ -3,7 +3,7 @@ Faculty: [FICT](https://fict.itmo.ru)
 Course: [Network programming](https://github.com/itmo-ict-faculty/network-programming)  
 Year: 2024/2025  
 Group: K3320  
-Author: Kirollos Rezkallah
+Author: Kirollos Rezkallah  
 Lab: Lab3  
 Date of create: 08.05.2025  
 Date of finished: 10.05.2025
