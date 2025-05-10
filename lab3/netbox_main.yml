@@ -1,0 +1,44 @@
+---
+- name: Gather device information including interfaces and IPs from NetBox
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+    netbox_url: "https://10.0.2.15:443"
+    netbox_token: "f4ec9ae2456ab7366c716755461db4315a349703"
+
+  tasks:
+    - name: Get all devices from NetBox
+      uri:
+        url: "{{ netbox_url }}/api/dcim/devices/"
+        headers:
+          Authorization: "Token {{ netbox_token }}"
+        validate_certs: false
+        return_content: true
+      register: devices_response
+
+    - name: Get interfaces for each device and combine with devices
+      uri:
+        url: "{{ netbox_url }}/api/dcim/?device={{ item.id }}/interfaces"
+        headers:
+          Authorization: "Token {{ netbox_token }}"
+        validate_certs: false
+        return_content: true
+      register: interfaces_response
+      loop: "{{ devices_response.json.results }}"
+      loop_control:
+        loop_var: item
+      # when: devices_response.json.results is defined
+
+    - name: Build a list of devices with their interfaces
+      set_fact:
+        devices_with_interfaces: "{{ devices_with_interfaces | default([]) + [{'device': item, 'interfaces': interfaces_response.json.results | default([])}] }}"
+      loop: "{{ devices_response.json.results }}"
+      loop_control:
+        loop_var: item
+      # when: interfaces_response is defined and interfaces_response.json is defined
+
+    - name: Save devices and interfaces to JSON file
+      copy:
+        dest: netbox_devices.json
+        content: "{{ devices_with_interfaces | to_json | indent(2) }}"

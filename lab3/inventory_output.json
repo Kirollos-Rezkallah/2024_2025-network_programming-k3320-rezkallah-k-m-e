@@ -1,0 +1,82 @@
+{
+    "_meta": {
+        "hostvars": {
+            "CHR": {
+                "custom_fields": {},
+                "device_roles": [
+                    "router"
+                ],
+                "device_types": [
+                    "cloud-hosted-router"
+                ],
+                "is_virtual": false,
+                "local_context_data": [
+                    null
+                ],
+                "locations": [],
+                "manufacturers": [
+                    "microtik"
+                ],
+                "platforms": [
+                    "main"
+                ],
+                "regions": [],
+                "serial": "",
+                "services": [],
+                "site_groups": [],
+                "sites": [
+                    "httpslocalhost8080"
+                ],
+                "status": {
+                    "label": "Active",
+                    "value": "active"
+                },
+                "tags": []
+            },
+            "CHR-V2": {
+                "custom_fields": {},
+                "device_roles": [
+                    "router"
+                ],
+                "device_types": [
+                    "cloud-hosted-router"
+                ],
+                "is_virtual": false,
+                "local_context_data": [
+                    null
+                ],
+                "locations": [],
+                "manufacturers": [
+                    "microtik"
+                ],
+                "platforms": [
+                    "main"
+                ],
+                "regions": [],
+                "serial": "",
+                "services": [],
+                "site_groups": [],
+                "sites": [
+                    "httpslocalhost8080"
+                ],
+                "status": {
+                    "label": "Active",
+                    "value": "active"
+                },
+                "tags": []
+            }
+        }
+    },
+    "all": {
+        "children": [
+            "ungrouped",
+            "device_roles_router"
+        ]
+    },
+    "device_roles_router": {
+        "hosts": [
+            "CHR",
+            "CHR-V2"
+        ]
+    }
+}

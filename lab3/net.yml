@@ -1,0 +1,44 @@
+- name: Get Mikrotik Serial Number and Update NetBox
+  hosts: mikrotik
+  gather_facts: no
+  vars:
+    netbox_url: "https://10.0.2.15:443" 
+    netbox_token: "i tut token"
+
+  tasks:
+    - name: Gather serial number from MikroTik devices
+      community.routeros.command:
+        commands:
+          - "/system license print"
+      register: result
+
+    - name: Extract serial numbers
+      set_fact:
+        serial_numbers: "{{ serial_numbers | default([]) + [ item | regex_replace('system-id: (\\S+).*', '\\1') ] }}"
+      loop: "{{ result.stdout_lines | select('search', 'system-id:') | list }}"
+      loop_control:
+        loop_var: item
+
+    - name: Show extracted serial numbers in terminal
+      debug:
+        msg: "{{ serial_numbers }}"
+
+    - name: Update devices in NetBox with serial numbers
+      uri:
+        url: "{{ netbox_url }}/api/dcim/devices/{{ item.id }}/"
+        method: PATCH
+        headers:
+          Authorization: "Token {{ netbox_token }}"
+          Content-Type: "application/json"
+        body_format: json
+        body:
+          serial: "{{ serial_numbers[loop.index0] }}" 
+        validate_certs: false
+      loop: "{{ ansible_play_hosts }}"  
+      loop_control:
+        loop_var: item
+      register: netbox_update_result
+
+    - name: Show NetBox update result
+      debug:
+        var: netbox_update_result
